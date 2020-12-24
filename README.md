@@ -26,3 +26,5 @@ CRITICAL: TestJSON.cpp(25): Object 2 should not be null!
 ERROR: Failed: JSON_RoundTrip
 ERROR: Test case r.fail failed
 ```
+
+That is, reading "8," produces a JSON object with the int 8.  Reading from "8" however (the string the library produces the the initial object) results in a null JSON object.
