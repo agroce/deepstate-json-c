@@ -26,7 +26,7 @@ TEST(JSON, RoundTrip) {
     LOG(TRACE) << "Type 2:" << json_object_get_type(obj2);
     ASSERT (json_object_equal(obj1, obj2)) << "NOT EQUAL:\nSTRING 1:\n" << str1 << "\nSTRING 2:\n" << str2;
     json_object_put(obj2);
-  json_tokener_free(tok2);    
+    json_tokener_free(tok2);    
   }
   json_object_put(obj1);
   json_tokener_free(tok1);
