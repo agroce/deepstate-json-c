@@ -17,7 +17,7 @@ bool object_equal_enough(struct json_object *o1, struct json_object *o2) {
     return false;
   }
 
-  /* Iterate over jso1 keys and see if they exist and are equal in jso2 */
+  /* Iterate over o1 keys and see if they are equal in o2 */
   json_object_object_foreachC(o1, iter) {
     sub = json_object_object_get(o2, iter.key);
     if (!equal_enough(iter.val, sub)) {
@@ -32,7 +32,7 @@ bool equal_enough(struct json_object *o1, struct json_object *o2) {
   json_type t1 = json_object_get_type(o1);
   json_type t2 = json_object_get_type(o2);
   if ((t1 == json_type_double) && (t2 == json_type_double)) {
-    // We have to call NaNs equal!                                                                               
+    // We have to call NaNs equal!                                              
     double d1 = json_object_get_double(o1);
     double d2 = json_object_get_double(o2);
     if (isnan(d1) && isnan(d2)) {
@@ -42,15 +42,8 @@ bool equal_enough(struct json_object *o1, struct json_object *o2) {
     }
   }
   if ((t1 == json_type_double) && (t2 == json_type_int)) {
-    // This function is needed because, e.g., "7e" will become a double but string will                          
-    // produce an int                                                                                            
-    int64_t i1 = json_object_get_int64(o1);
-    int64_t i2 = json_object_get_int64(o2);
-    if (i1 != i2) {
-      LOG(TRACE) << "i1 = " << i1;
-      LOG(TRACE) << "i2 = " << i2;
-    }
-    return (i1 == i2);
+    return (json_object_get_int64(o1) == json_object_get_int64(o2)) ||
+      (json_object_get_double(o1) == json_object_get_double(o2));
   }
   if (t1 != t2) {
     return false; // Types must be equal, otherwise                                                              
