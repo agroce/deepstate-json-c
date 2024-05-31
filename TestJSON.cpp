@@ -94,7 +94,7 @@ TEST(JSON, RoundTrip) {
     }
     if (DeepState_Bool()) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_NOZERO to flags.";
-      flags |= JSON_C_TO_STRING_PRETTY_NOZERO;
+      flags |= JSON_C_TO_STRING_NOZERO;
     }
     if (DeepState_Bool()) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_NOSLASHESCAPE to flags.";
@@ -114,7 +114,7 @@ TEST(JSON, RoundTrip) {
     ASSERT (obj2 != NULL) << "Object 2 should not be null!";
     json_type type2 = json_object_get_type(obj2);
     LOG(TRACE) << "Type 2:" << type2 << " " << json_type_to_name(type2);
-    ASSERT (json_object_is_type(obj1, type2);
+    ASSERT (json_object_is_type(obj1, type2)) << "Types mismatch!";
     if (!json_object_equal(obj1, obj2)) {
       ASSERT(equal_enough(obj1, obj2)) << "OBJECTS NOT EQUAL:\n\n" << str1 << "\n\n" << str2;
     }
