@@ -80,7 +80,7 @@ TEST(JSON, RoundTrip) {
   LOG(TRACE) << "Type 1:" << type1 << " " << json_type_to_name(type1);
   if (obj1 != NULL) {
     const char* str2 = json_object_to_json_string(obj1);
-    size_t size2 = strlen(str2);;
+    size_t size2 = strlen(str2);
     LOG(TRACE) << "String 2:" << str2;
     LOG(TRACE) << "Length 2:" << size2;
     json_tokener *tok2 = json_tokener_new();
@@ -118,11 +118,27 @@ TEST(JSON, RoundTrip) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_COLOR to flags.";
       flags |= JSON_C_TO_STRING_COLOR;
     }
-    // We run this one to make sure there are no crashes, but the round-trip
-    // is not realible with some flag options.
+    // We run this one to make sure there are no crashes and to guide fuzzing, but the
+    // round-trip is not realible with some flag options.
     const char* str2ext = json_object_to_json_string_ext(obj1, flags);
+    size_t size2ext = strlen(str2ext);
+    LOG(TRACE) << "String 2 ext:" << str2ext;
+    LOG(TRACE) << "Length 2 ext:" << size2ext;
+    json_tokener *tok2ext = json_tokener_new();
+    json_object *obj2ext = json_tokener_parse_ex(tok2ext, str2ext, size2ext + 1);
+    json_type type2ext = json_object_get_type(obj2ext);
+    LOG(TRACE) << "Type 2 ext:" << type2 << " " << json_type_to_name(type2ext);
+    LOG(TRACE) << "Type comparison ext:" << json_object_is_type(obj1, type2ext);
+    if (!json_object_equal(obj1ext, obj2ext)) {
+      if (!equal_enough(obj1, obj2)) {
+	// Not a failure but record and use equality to guide fuzzing
+	LOG(TRACE) << "OBJECTS NOT EQUAL:\n\n" << str1 << "\n\n" << str2ext;
+      }
+    }
     json_object_put(obj2);
     json_tokener_free(tok2);
+    json_object_put(obj2ext);
+    json_tokener_free(tok2ext);
   }
   json_object_put(obj1);
   json_tokener_free(tok1);
