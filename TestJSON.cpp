@@ -64,7 +64,7 @@ bool equal_enough(struct json_object *o1, struct json_object *o2) {
   if (t1 == json_type_object) {
     return object_equal_enough(o1, o2);
   }
-  // If not a recursive type or double/int pair, just check equality                                             
+  // If not a recursive type or double/int pair, just check equality
   return json_object_equal(o1, o2);
 }
 
@@ -79,6 +79,20 @@ TEST(JSON, RoundTrip) {
   json_type type1 = json_object_get_type(obj1);
   LOG(TRACE) << "Type 1:" << type1 << " " << json_type_to_name(type1);
   if (obj1 != NULL) {
+    const char* str2 = json_object_to_json_string(obj1);
+    size_t size2 = strlen(str2);;
+    LOG(TRACE) << "String 2:" << str2;
+    LOG(TRACE) << "Length 2:" << size2;
+    json_tokener *tok2 = json_tokener_new();
+    json_object *obj2 = json_tokener_parse_ex(tok2, str2, size2 + 1);
+    ASSERT (obj2 != NULL) << "Object 2 should not be null!";
+    json_type type2 = json_object_get_type(obj2);
+    LOG(TRACE) << "Type 2:" << type2 << " " << json_type_to_name(type2);
+    LOG(TRACE) << "Type comparison:" << json_object_is_type(obj1, type2);
+    if (!json_object_equal(obj1, obj2)) {
+      ASSERT(equal_enough(obj1, obj2)) << "OBJECTS NOT EQUAL:\n\n"
+				       << str1 << "\n\n" << str2;
+    }
     int flags = 0;
     if (DeepState_Bool()) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_SPACED to flags.";
@@ -100,20 +114,13 @@ TEST(JSON, RoundTrip) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_NOSLASHESCAPE to flags.";
       flags |= JSON_C_TO_STRING_NOSLASHESCAPE;
     }
-    const char* str2 = json_object_to_json_string(obj1);
-    const char* str2ext = json_object_to_json_string_ext(obj1, flags);
-    size_t size2 = strlen(str2);;
-    LOG(TRACE) << "String 2:" << str2;
-    LOG(TRACE) << "Length 2:" << size2;
-    json_tokener *tok2 = json_tokener_new();
-    json_object *obj2 = json_tokener_parse_ex(tok2, str2, size2 + 1);
-    ASSERT (obj2 != NULL) << "Object 2 should not be null!";
-    json_type type2 = json_object_get_type(obj2);
-    LOG(TRACE) << "Type 2:" << type2 << " " << json_type_to_name(type2);
-    LOG(TRACE) << "Type comparison:" << json_object_is_type(obj1, type2);
-    if (!json_object_equal(obj1, obj2)) {
-      ASSERT(equal_enough(obj1, obj2)) << "OBJECTS NOT EQUAL:\n\n" << str1 << "\n\n" << str2;
+    if (DeepState_Bool()) {
+      LOG(TRACE) << "Added JSON_C_TO_STRING_COLOR to flags.";
+      flags |= JSON_C_TO_STRING_COLORE;
     }
+    // We run this one to make sure there are no crashes, but the round-trip
+    // is not realible with some flag options.
+    const char* str2ext = json_object_to_json_string_ext(obj1, flags);
     json_object_put(obj2);
     json_tokener_free(tok2);
   }
