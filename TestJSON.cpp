@@ -129,8 +129,8 @@ TEST(JSON, RoundTrip) {
     json_type type2ext = json_object_get_type(obj2ext);
     LOG(TRACE) << "Type 2 ext:" << type2 << " " << json_type_to_name(type2ext);
     LOG(TRACE) << "Type comparison ext:" << json_object_is_type(obj1, type2ext);
-    if (!json_object_equal(obj1ext, obj2ext)) {
-      if (!equal_enough(obj1, obj2)) {
+    if (!json_object_equal(obj1, obj2ext)) {
+      if (!equal_enough(obj1, obj2ext)) {
 	// Not a failure but record and use equality to guide fuzzing
 	LOG(TRACE) << "OBJECTS NOT EQUAL:\n\n" << str1 << "\n\n" << str2ext;
       }
