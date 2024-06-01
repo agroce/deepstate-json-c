@@ -116,7 +116,7 @@ TEST(JSON, RoundTrip) {
     }
     if (DeepState_Bool()) {
       LOG(TRACE) << "Added JSON_C_TO_STRING_COLOR to flags.";
-      flags |= JSON_C_TO_STRING_COLORE;
+      flags |= JSON_C_TO_STRING_COLOR;
     }
     // We run this one to make sure there are no crashes, but the round-trip
     // is not realible with some flag options.
